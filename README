@@ -1,1 +1,31 @@
-Wrapper for the OpenCNAM (http://www.opencnam.com) V2 API
+Overview
+
+This is an Objective-C Wrapper for the OpenCNAM (http://www.opencnam.com) V2 API. 
+
+Getting started
+
+1) Include OpenCNAM.h/.m in your project
+
+2) Initialize an OpenCNAM object liks this (Hobbyist tier):
+
+OpenCNAM *openCNAM = [[OpenCNAM alloc] initWithAccountSID:nil withAuthToken:nil];
+
+If you are using a paid plan simply initialize like this:
+
+OpenCNAM *openCNAM = [[OpenCNAM alloc] initWithAccountSID:@"YOUR SID HERE" withAuthToken:@"YOUR AUTH TOKEN HERE"];
+
+
+3) Lookup a phone number
+
+    [openCNAM submitRequestForPhoneNumber:@"6502530000" responseHandler:^(NSDictionary *response){
+        NSLog(@"%@",response);
+    } errorHandler:^(NSError *error, NSNumber *statusCode, NSString *readableError){
+        NSLog(@"%@",readableError);
+    }];
+
+
+Options
+
+If you wish for the requests to be made synchronously simply set the asynchronous property to NO after initializing your OpenCNAM object.
+
+This is useful for unit tests (such as the tests in the sample app), as you don't have async callbacks that are generally challenging to test.
