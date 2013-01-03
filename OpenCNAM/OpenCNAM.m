@@ -71,31 +71,33 @@
 
 -(void)parseResponse:(NSURLResponse *)response withData:(NSData *)data withError:(NSError *)error responseHandler:(OpenCNAMResponseHandler)callback errorResponseHandler:(OpenCNAMErrorResponseHandler)errorCallback
 {
-    //Check for connection error
-    if (error) {
-        errorCallback(error, [NSNumber numberWithInt:-1], error.localizedDescription);
-        return;
-    }
-    
-    //Check for status code errors from OpenCNAM
-    NSHTTPURLResponse *urlResponse = (NSHTTPURLResponse *)response;
-    if (urlResponse.statusCode != 200) {
-        NSString *readableError = [self getReadableErrorFromURLResponse:urlResponse];
-        NSNumber *numberStatuscode = [NSNumber numberWithInt:urlResponse.statusCode];
-        errorCallback(nil,numberStatuscode,readableError);
-        return;
-    }
-    
-    //Parse response and pass back NSDictionary
-    NSError *parseError = nil;
-    NSDictionary *responseJson = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&parseError];
-    
-    if (parseError) {
-        errorCallback(parseError, [NSNumber numberWithInt:-1], parseError.localizedDescription);
-        return;
-    }
-    
-    callback(responseJson);
+    dispatch_async(dispatch_get_main_queue(), ^{
+        //Check for connection error
+        if (error) {
+            errorCallback(error, [NSNumber numberWithInt:-1], error.localizedDescription);
+            return;
+        }
+        
+        //Check for status code errors from OpenCNAM
+        NSHTTPURLResponse *urlResponse = (NSHTTPURLResponse *)response;
+        if (urlResponse.statusCode != 200) {
+            NSString *readableError = [self getReadableErrorFromURLResponse:urlResponse];
+            NSNumber *numberStatuscode = [NSNumber numberWithInt:urlResponse.statusCode];
+            errorCallback(nil,numberStatuscode,readableError);
+            return;
+        }
+        
+        //Parse response and pass back NSDictionary
+        NSError *parseError = nil;
+        NSDictionary *responseJson = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&parseError];
+        
+        if (parseError) {
+            errorCallback(parseError, [NSNumber numberWithInt:-1], parseError.localizedDescription);
+            return;
+        }
+        
+        callback(responseJson);
+    });
 }
 
 -(NSString *)getReadableErrorFromURLResponse:(NSHTTPURLResponse *)urlResponse
