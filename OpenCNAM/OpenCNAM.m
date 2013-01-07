@@ -37,6 +37,7 @@
 
 -(void)submitRequestForPhoneNumber:(NSString *)phoneNumber responseHandler:(OpenCNAMResponseHandler)callback errorHandler:(OpenCNAMErrorResponseHandler)errorCallback
 {
+    phoneNumber = [phoneNumber stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     NSString *proAccountAuthAppend = nil;
     NSURL *url = nil;
     if (_accountSID && _authToken) {
